@@ -6,9 +6,11 @@ set(CMAKE_PREFIX_PATH "/home/mcw/libtorch")
 find_package(Torch REQUIRED)
 find_package(GTest REQUIRED)
 
+include_directories(include/)
+
 add_executable(Validation 
-    conv.cpp 
-    test_script.cpp
+    src/conv.cpp 
+    test/test_script.cpp
 )
 
 target_link_libraries(Validation 
