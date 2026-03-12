@@ -1,69 +1,73 @@
 #include <iostream>
 #include <vector>
+#include "conv.hpp"
 
 using namespace std;
 
-// Performs 1D convolution on a matrix with M channels and length N
-void conv1d(vector<vector<int>>* input_ptr, int M, int N, int k, int stride, vector<int>* output_ptr){
+// Performs a 1D cross-correlation (convolution) over a multi-channel input.
+void conv1d(vector<vector<int>>* input_ptr, int num_channels, int input_length, int kernel_size,
+            int stride, vector<int>* output_ptr) {
+
     auto& input = *input_ptr;
-    
+
     // Initialize kernels for each channel
-    vector<vector<int>> kernel(M,vector<int>(k));
-    for(int i=0;i<M;i++){
-        for(int j=0;j<k;j++){
-            kernel[i][j]=i+1; // Set kernel values equal to the channel index
+    vector<vector<int>> kernel(num_channels, vector<int>(kernel_size));
+    for (int channel = 0; channel < num_channels; channel++) {
+        for (int k = 0; k < kernel_size; k++) {
+            kernel[channel][k] = channel + 1;
         }
     }
 
-    // Calculate output size using formula
-    int output_size = (N - k) / stride + 1;
+    // Calculate output size
+    int output_size = (input_length - kernel_size) / stride + 1;
     output_ptr->assign(output_size, 0);
     auto& output = *output_ptr;
 
     // 1D convolution operation
-    int out_idx = 0;   // Current position in the output vector
-    int i = 0;         // Horizontal offset in the input based on stride   
+    int out_idx = 0;
+    int offset = 0;  // horizontal window offset based on stride
+
     while (out_idx < output_size) {
-        for(int j = 0; j < M; j++) {           
-            for(int l = 0; l < k; l++) {
-                // Sum products across all channels and kernel width
-                output[out_idx] += input[j][l + i] * kernel[j][l]; 
+        for (int channel = 0; channel < num_channels; channel++) {
+            for (int k = 0; k < kernel_size; k++) {
+                output[out_idx] += input[channel][k + offset] * kernel[channel][k];
             }
         }
-        // Move window by stride and increment output index
-        i += stride;   
-        out_idx++;   
+        offset += stride;
+        out_idx++;
     }
 }
 
 // Function to perform 2D convolution on a single-channel matrix
-void conv2d(vector<vector<int>>* input_ptr, int H, int W, int kh, int kw, int stride, vector<vector<int>>* output_ptr) {
+void conv2d(vector<vector<int>>* input_ptr, int input_height, int input_width, int kernel_height, int kernel_width, 
+            int stride, vector<vector<int>>* output_ptr) {
+    
     auto& input = *input_ptr;
 
     // Initializing the 2D kernel
-    vector<vector<int>> kernel(kh, vector<int>(kw));
-    for(int i = 0; i < kh; i++) {
-        for(int j = 0; j < kw; j++) {
-            kernel[i][j] = i + j; // eg. kernel with values = sum of i and j.
+    vector<vector<int>> kernel(kernel_height, vector<int>(kernel_width));
+    for (int row = 0; row < kernel_height; row++) {
+        for (int col = 0; col < kernel_width; col++) {
+            kernel[row][col] = row + col; // kernel value = sum of row and col indices
         }
     }
 
     // Calculating output dimensions 
-    int out_h = (H - kh) / stride + 1;
-    int out_w = (W - kw) / stride + 1;
+    int out_height = (input_height - kernel_height) / stride + 1;
+    int out_width  = (input_width  - kernel_width)  / stride + 1;
     
-    output_ptr->assign(out_h, vector<int>(out_w, 0));
+    output_ptr->assign(out_height, vector<int>(out_width, 0));
     auto& output = *output_ptr;
 
     // Performing the convolution operation
-    for (int i = 0; i < out_h; i++) {       // Kernel vertical slide 
-        for (int j = 0; j < out_w; j++) {   // Kernel horizontal slide
+    for (int i = 0; i < out_height; i++) {       // Kernel vertical slide 
+        for (int j = 0; j < out_width; j++) {   // Kernel horizontal slide
             
             int sum = 0;
             // Kernel matrix row traversal
-            for (int m = 0; m < kh; m++) {
+            for (int m = 0; m < kernel_height; m++) {
                 // Kernel matrix column traversal
-                for (int n = 0; n < kw; n++) {
+                for (int n = 0; n < kernel_width; n++) {
                     // Calculate input coordinates using stride
                     int row = i * stride + m;
                     int col = j * stride + n;

@@ -3,9 +3,13 @@
 
 #include <vector>
 
-// Declarations
-void conv1d(std::vector<std::vector<int>>* input_ptr, int M, int N, int k, int stride, std::vector<int>* output_ptr);
+using namespace std;
 
-void conv2d(std::vector<std::vector<int>>* input_ptr, int H, int W, int kh, int kw, int stride, std::vector<std::vector<int>>* output_ptr);
+// Declarations
+void conv1d(vector<vector<int>>* input_ptr, int num_channels, int input_length, int kernel_size,
+            int stride,vector<int>* output_ptr);
+
+void conv2d(vector<vector<int>>* input_ptr, int input_height, int input_width, int kernel_height,
+            int kernel_width, int stride, vector<vector<int>>* output_ptr);
 
 #endif
