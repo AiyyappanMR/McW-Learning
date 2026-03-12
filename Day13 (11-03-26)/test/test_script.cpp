@@ -1,8 +1,20 @@
 #include <gtest/gtest.h>
 #include <torch/torch.h>
 #include "conv.hpp"
+#include <experimental/random>
 
 using namespace std;
+
+vector<vector<int>> generate_random_vec(int rows, int cols) {
+    vector<vector<int>> vec(rows, vector<int>(cols));
+    for (auto& row : vec) {
+        for (auto& val : row) {
+            // Generates a random int between 0 and 10 inclusive
+            val = std::experimental::randint(0, 10);
+        }
+    }
+    return vec;
+}
 
 // Convert vector<vector<int>> to torch::Tensor
 torch::Tensor to_tensor(const vector<vector<int>>& vec) {
@@ -82,15 +94,9 @@ INSTANTIATE_TEST_SUITE_P(
     Conv1DTest,
     testing::Values(
         // Kernel size 3, stride 1, 2 channels, all ones input
-        Conv1DParams{
-            2, 6, 3, 1,
-            vector<vector<int>>(2, vector<int>(6, 1))
-        },
+        Conv1DParams{2, 6, 3, 1,generate_random_vec(2, 6)},
         // Kernel size 2, stride 2, 1 channel, sequential input
-        Conv1DParams{
-            1, 4, 2, 2,
-            {{1, 2, 3, 4}}
-        }
+        Conv1DParams{1, 4, 2, 2,generate_random_vec(1, 4)}
     )
 );
 
@@ -121,9 +127,9 @@ TEST_P(Conv2DTest, ValidateAgainstPyTorch) {
 INSTANTIATE_TEST_SUITE_P(Conv2DTests, Conv2DTest,
     testing::Values(
         // 4x4 input, 2x2 kernel, stride 2, all ones input
-        Conv2DParams{4, 4, 2, 2, 2,vector<vector<int>>(4, vector<int>(4, 1))},
+        Conv2DParams{4, 4, 2, 2, 2,generate_random_vec(4, 4)},
         // 5x5 input, 3x3 kernel, stride 1, all twos input
-        Conv2DParams{5, 5, 3, 3, 1,vector<vector<int>>(5, vector<int>(5, 2))}
+        Conv2DParams{5, 5, 3, 3, 1,generate_random_vec(5, 5)}
     )
 );
 
