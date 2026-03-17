@@ -10,6 +10,8 @@ from src import my_fliplr
     (torch.tensor([1, 2, 3, 4])),
     # 3. Square matrix of size 3x3
     (torch.eye(3)),
+    # 4. 3D tensor 2x2x2 
+    (torch.tensor([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])),
 ])
 
 # Test the my_fliplr function against PyTorch's built-in torch.fliplr for correctness.
