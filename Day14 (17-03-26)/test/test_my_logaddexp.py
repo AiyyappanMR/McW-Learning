@@ -1,6 +1,6 @@
 import torch
 import pytest
-from main import my_logaddexp
+from src import my_logaddexp
 
 # Test cases for my_logaddexp function
 @pytest.mark.parametrize("input_a, input_b", [
