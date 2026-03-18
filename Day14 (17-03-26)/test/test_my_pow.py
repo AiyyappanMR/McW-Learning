@@ -12,6 +12,8 @@ from src import my_pow
     (torch.tensor([2.0]), torch.tensor([1, 2, 3])),
     # 4. Tensor base, scalar exponent 
     (torch.tensor([1.0, 2.0, 3.0]), torch.tensor([2])),
+    # 5. base 1 and exp 0
+    (torch.tensor([1.0]), torch.tensor([0])),
 ])
 
 # Test the my_pow function against PyTorch's built-in torch.pow for correctness.
